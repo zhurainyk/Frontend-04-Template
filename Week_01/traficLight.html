@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div{
+            width:100px;
+            height:100px;
+            background-color:gray;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left:30px;
+        }
+        .red.light{
+            background-color: red;
+        }
+        .yellow.light{
+            background-color: yellow;
+        }
+        .green.light{
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="red"></div>
+    <div class="yellow"></div>
+    <div class="green"></div>
+    <button class='btn'>切换</button>
+    <script>
+        function get(className){
+            return document.getElementsByClassName(className)[0]
+        }
+        function red(){
+               get('green').classList.remove('light')
+            let redL = get('red')
+     
+            redL.classList.add('light')
+        }
+         function yellow(){
+              get('red').classList.remove('light')
+            let yellowL = get('yellow')
+        
+            yellowL.classList.add('light')
+        }
+         function green(){
+             get('yellow').classList.remove('light')
+            let greenL = get('green')
+     
+            greenL.classList.add('light')
+        }
+     
+     //方法一 回到地狱
+        function go(){
+            red()
+            setTimeout(()=>{
+                yellow()
+                setTimeout(()=>{
+                    green()
+                    setTimeout(()=>{
+                        go()
+                    },3000)
+                },1500)
+            },5000)
+        }
+    //方法二 promise
+    function sleep(t){
+        return new Promise((res,rej)=>{
+            setTimeout(res,t)
+        })
+    }
+    function go2(){
+        red()
+        sleep(2000).then(()=>{
+            yellow()
+            return sleep(1000)
+        }).then(()=>{
+            green()
+            return sleep(2000)
+        }).then(()=>{
+            go2()
+        })
+    }
+
+    //方法三 async await 
+    async function go3(){
+        while(true){
+            red()
+            await sleep(2000)
+            yellow()
+            await sleep(1000)
+            green()
+            await sleep(1500)
+        }
+    }
+
+    //方法四 手动控制
+    function next(element,eventName){
+        return new Promise(res=>{
+            element.addEventListener(eventName,res,{once:true})//表示只调用一次 调用过后自动移除
+        })
+    }
+   async function go4(){
+        while(true){
+            red()
+        await next(get('btn'),'click')
+        yellow()
+        await next(get('btn'),'click')
+        green()
+        await next(get('btn'),'click')
+        }
+    }
+
+    //方法五 generator
+    function* go5(){
+        while(true){
+            red()
+            yield sleep(3000);
+            yellow()
+            yield sleep(1000)
+            green()
+            yield sleep(3000)
+        }
+    }
+    function run(iterator){
+        let {value,done}  = iterator.next()
+        console.log(value,done)
+        if(done){
+            return
+        }
+        if(value instanceof Promise){
+            value.then(()=>{
+                run(iterator)
+            })
+        }
+    }
+    function co(generator){
+        return function(){
+            return run(generator())
+        }
+    }
+    let go6 = co(go5)
+
+
+    //模拟一个计时器
+    async function* counter(){
+        let i = 0;
+        while(true){
+            await sleep(1000);
+            yield i++;
+
+        }
+    }
+    (async function(){
+        for await(let v of counter()){
+            console.log(v)
+        }
+    })()
+    </script>
+</body>
+</html>
