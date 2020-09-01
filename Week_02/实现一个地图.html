@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-size: 0;
+      }
+      .cell {
+        width: 6px;
+        height: 6px;
+        display: inline-block;
+        background-color: goldenrod;
+        border: 1px solid white;
+        vertical-align: bottom;
+      }
+      #container {
+        width: 800px;
+        margin: 50px auto;
+      }
+      .save {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <button class="save">save</button>
+    <script>
+      let container = document.getElementById("container");
+      let saveBtn = document.getElementsByClassName("save")[0];
+      let arr =
+        JSON.parse(localStorage.getItem("arr")) || new Array(10000).fill(0);
+      saveBtn.addEventListener("click", () => {
+        localStorage.setItem("arr", JSON.stringify(arr));
+        let a = localStorage.getItem("arr");
+        console.log(JSON.parse(a));
+      });
+      for (let i = 0; i < 100; i++) {
+        for (let j = 0; j < 100; j++) {
+          let cell = document.createElement("div");
+          cell.classList.add("cell");
+          if (arr[i * 100 + j] === 1) {
+            cell.style.backgroundColor = "green";
+            cell.style.borderColor = "green";
+          }
+          cell.addEventListener("mousemove", () => {
+            if (down) {
+              if (clear) {
+                console.log(clear);
+                cell.style.backgroundColor = "goldenrod";
+                cell.style.borderColor = "white";
+                arr[i * 100 + j] = 0;
+              } else {
+                cell.style.backgroundColor = "green";
+                cell.style.borderColor = "green";
+                arr[i * 100 + j] = 1;
+              }
+            }
+          });
+          container.appendChild(cell);
+        }
+      }
+      let down = false;
+      let clear = false;
+
+      document.addEventListener("mousedown", (e) => {
+        down = true;
+        console.log(e.which);
+        clear = e.which === 3;
+      });
+      document.addEventListener("mouseup", () => {
+        down = false;
+        console.log("抬起了");
+        clear = false;
+      });
+      document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+      function sleep(t) {
+        return new Promise((res) => {
+          setTimeout(res, t);
+        });
+      }
+
+      findPath(arr, [0, 0], [50, 50]);
+
+      async function findPath(map, start, end) {
+        let table = Object.create(map); //复制一份
+
+        let queue = [start]; //形成一个队列
+
+        async function insert(x, y, pre) {
+          if (x < 0 || x >= 100 || y < 0 || y >= 100) {
+            return;
+          }
+          if (table[x * 100 + y]) return;
+          table[x * 100 + y] = pre; //存前驱节点的坐标
+          //寻找的过程
+          //   await sleep(0)
+          //   container.children[x*100 + y].style.backgroundColor = 'purple'
+          //   container.children[x*100 + y].style.borderColor = 'purple'
+
+          queue.push([x, y]);
+        }
+        while (queue.length) {
+          let [x, y] = queue.shift();
+          if (x == end[0] && y == end[1]) {
+            //找到了终点 开始绘制路线
+            let path = [];
+            while (x != start[0] || y != start[1]) {
+              //从end开始不断循环找到start
+
+              path.push(x * 100 + y); //在原来地图上的点
+              [x, y] = table[x * 100 + y]; //从table中找到pre坐标点
+              await sleep(0);
+              container.children[x * 100 + y].style.backgroundColor = "red";
+              container.children[x * 100 + y].style.borderColor = "red";
+            }
+            return path
+            // path.forEach((item) => {
+            //   console.log(item);
+            // });
+          }
+          await insert(x - 1, y, [x, y]);
+          await insert(x, y - 1, [x, y]);
+          await insert(x + 1, y, [x, y]);
+          await insert(x, y + 1, [x, y]);
+          await insert(x - 1, y - 1, [x, y]);
+          await insert(x + 1, y - 1, [x, y]);
+          await insert(x - 1, y + 1, [x, y]);
+          await insert(x + 1, y + 1, [x, y]);
+        }
+        return null;
+      }
+    </script>
+  </body>
+</html>

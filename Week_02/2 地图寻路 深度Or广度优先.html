@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-size: 0px;
+      }
+      .cell {
+        width: 6px;
+        height: 6px;
+        display: inline-block;
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
+        background-color: gray;
+        vertical-align: top;
+        line-height: 7px;
+      }
+      #container {
+        width: 701px;
+      }
+      #save {
+        font-size: 16px;
+        padding: 2px 5px;
+        border: 1px solid red;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <button id="save">save</button>
+    <script>
+      let container = document.getElementById("container");
+      let map = localStorage.getItem("map");
+      let arr = JSON.parse(map) || new Array(10000).fill(0);
+      save.onclick = function () {
+        localStorage.setItem("map", JSON.stringify(arr));
+      };
+      for (let i = 0; i < 100; i++) {
+        for (let j = 0; j < 100; j++) {
+          let cell = document.createElement("div");
+          cell.classList.add("cell");
+          if (arr[i * 100 + j] === 1) {
+            cell.style.backgroundColor = "black";
+          }
+          cell.addEventListener("mousemove", () => {
+            if (mouseDown) {
+              if (clear) {
+                cell.style.backgroundColor = "";
+                arr[i * 100 + j] = 0;
+              } else {
+                cell.style.backgroundColor = "black";
+                arr[i * 100 + j] = 1;
+              }
+            }
+          });
+
+          container.appendChild(cell);
+        }
+        // container.appendChild(document.createElement('br'))
+      }
+      let mouseDown = false;
+      let clear = false;
+      document.addEventListener("mousedown", (e) => {
+        //按下
+        mouseDown = true;
+        clear = e.which === 3; //右键
+      });
+      document.addEventListener("mouseup", () => (mouseDown = false)); //抬起
+      document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+      //寻路
+      /* 由于 push() 是向数组末端添加数组项的方法，
+        因此要模拟队列只需一个从数组前端取得数组项的方法。
+        实现这一操作的数组方法就是 shift() ，
+        它能够移除数组中的第一个项并返回该项，同时将数组长度减1。
+        顾名思义， unshift() 与 shift() 的用途相反：它能在数组前端添加任意个数组项并返回新数组的长度。
+        因此，同时使用 unshift() 和 pop() 方法，可以从相反的方向来模拟队列，即在数组的前端添加数组项，从数组末端移除数组项。
+*/
+      function path(map, start, end) {
+          console.log('进来')
+        let queue = [start];
+        function insert(x, y) {
+          if (x < 0 || x > 100 || y < 0 || y > 100) {
+            return; //边境
+          }
+          if (map[x * 100 + y]) {
+            return; //表示该项已经走过了 不为空
+          }
+          map[x * 100 + y] = 2; //做个标记
+          queue.push([x, y]);
+        }
+        while (queue.length) {
+          let [x, y] = queue.shift(); //取出来
+          console.log(x, y);
+          if (x === end[0] && y === end[1]) {
+            return true;
+          }
+          insert(x - 1, y);
+          insert(x, y - 1);
+          insert(x + 1, y);
+          insert(x, y + 1);
+        }
+        return false;
+      }
+
+     console.log( path(arr, [0, 0], [2, 3]))
+    </script>
+  </body>
+</html>
