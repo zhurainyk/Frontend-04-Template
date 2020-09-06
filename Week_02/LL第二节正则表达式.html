@@ -1,0 +1,30 @@
+<DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g 
+        //一个括号表示一个小单体 +表示至少出现一次 \t空格 \n换行符    
+        let dictionary = ['Number','Whitespace','LineTerminator','*','/','+','-'] //LineTerminator行终止符
+        
+        function tokenize(source){
+            var result = null;
+            while(true){
+                result = regexp.exec(source) 
+                //exec() 方法在一个指定字符串中执行一个搜索匹配。返回一个结果数组或 null。
+                if(!result)break;
+                for(var i = 1;i<=dictionary.length;i++){
+                    if(result[i])console.log(dictionary[i-1])
+                }
+                console.log(result)
+            } 
+        }
+        tokenize('1024  +  10  *  25')
+    </script>
+</body>
+</html>

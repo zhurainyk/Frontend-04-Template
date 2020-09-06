@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <pre>
+          
+    </pre>
+    <script>
+    // 四则运算
+            /***
+             * 
+             *      表达式定义  AdditiveExpression 加法表达式 EOF end of File 终结符
+             *                  MultiplicativeExpression 乘法表达式 所有的加法表达式都可以看成一个
+             *                  乘法表达式 
+                    <Expression> :: = <AdditiveExpression><EOF>
+                
+                    <AdditiveExpression>:: = <MultiplicativeExpression>
+                             | <AdditiveExpression> <+> <MultiplacationExpression>
+                             | <AdditiveExpression> <-> <MultiplicationExpression>
+        
+                    <MultiplicativeExpress> :: = 
+                        <Number>
+                            |<MultiplicativeExpression> <*> <Number>
+                            |<MultiplicativeExpression> </> <Number>
+             * 
+             * --------LL语法分析----------
+             *  <AdditiveExpresssion>::= 
+             *       <Number>
+             *       |<MultiplicativeExpression><*><Number>
+             *       |<MultiplicativeExpression></><Number>
+             *       |<AdditiveExpression><+><MultiplicativeExpression>
+             *       |<AdditiveExpression><-><MultiplicativeExpression>
+             * 
+             * 
+              */
+    </script>
+</body>
+</html>
